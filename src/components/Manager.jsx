@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 const Manager = () => {
   const ref = useRef();
+  const passwordRef = useRef();
   const [form, setForm] = useState({ site: "", username: "", password: "" });
   const [passwordArray, setPasswordArray] = useState([]);
 
@@ -13,10 +14,13 @@ const Manager = () => {
   }, []);
 
   const showPassword = () => {
+    passwordRef.current.type = "text";
     if (ref.current.src.includes("src/assets/eyecross.png")) {
       ref.current.src = "src/assets/eye.png";
+      passwordRef.current.type = "text";
     } else {
       ref.current.src = "src/assets/eyecross.png";
+      passwordRef.current.type = "password";
     }
   };
 
@@ -30,6 +34,11 @@ const Manager = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const copyText = (text) => {
+    navigator.clipboard.writeText(text)
+  }
+  
 
   return (
     <>
@@ -63,10 +72,11 @@ const Manager = () => {
             />
             <div className="relative">
               <input
+                ref={passwordRef}
                 value={form.password}
                 onChange={handleChange}
                 className="rounded-xl border border-green-500 w-full mr-12 p-4 py-1 "
-                type="text"
+                type="password"
                 placeholder="Enter the password"
                 name="password"
               />
@@ -110,14 +120,36 @@ const Manager = () => {
                 {Array.isArray(passwordArray) &&
                   passwordArray.map((item, index) => (
                     <tr key={index}>
-                      <td className="py-2 border border-white text-center w-32">
-                        {item.site}
+                      <td className="py-2 px-5 border    border-white text-center w-32">
+                        <div className="flex justify-center items-center">
+                          <a
+                            className=" gap-2   items-center"
+                            href={item.site}
+                            target="_blank"
+                          >
+                            {item.site}
+                          </a>
+                          <div className="size-7 cursor-pointer" onClick={()=>{copyText(item.site)}}>
+                            <img width={24} src="src/assets/copy.gif" alt="" />
+                          </div>
+                        </div>
                       </td>
                       <td className="py-2 border border-white text-center w-32">
-                        {item.username}
+                        <div className="flex justify-center items-center">
+                          {item.username}
+
+                          <div className="size-7 cursor-pointer" onClick={()=>{copyText(item.username)}}>
+                            <img width={24} src="src/assets/copy.gif" alt="" />
+                          </div>
+                        </div>
                       </td>
                       <td className="py-2 border border-white text-center w-32">
-                        {item.password}
+                        <div className="flex justify-center items-center">
+                          {item.password}
+                          <div className="size-7 cursor-pointer" onClick={()=>{copyText(item.password)}}>
+                            <img width={24} src="src/assets/copy.gif" alt="" />
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ))}
