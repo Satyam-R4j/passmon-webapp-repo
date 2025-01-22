@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
 const Manager = () => {
   const ref = useRef();
@@ -25,10 +27,51 @@ const Manager = () => {
   };
 
   const savePassword = () => {
-    console.log(form);
-    setPasswordArray([...passwordArray, form]);
-    localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]));
-    console.log(...passwordArray, form);
+    setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
+    localStorage.setItem(
+      "passwords",
+      JSON.stringify([...passwordArray, { ...form, id: uuidv4() }])
+    );
+    setForm({ sit: "", username: "", password: "" });
+    toast("Password save!", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const deletePassword = (id) => {
+    let con = confirm("Do you really want to delete password!!");
+    if (con) {
+      setPasswordArray(passwordArray.filter((item) => item.id != id));
+      localStorage.setItem(
+        "passwords",
+        JSON.stringify(passwordArray.filter((item) => item.id !== id))
+        
+      );
+      toast("Password deleted!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
+
+  const editPassword = (id) => {
+    console.log("Editing Password with id ", id);
+    setForm(passwordArray.filter((i) => i.id === id)[0]);
+    setPasswordArray(passwordArray.filter((i) => i.id !== id));
+    
   };
 
   const handleChange = (e) => {
@@ -36,13 +79,35 @@ const Manager = () => {
   };
 
   const copyText = (text) => {
-    navigator.clipboard.writeText(text)
-  }
-  
+    toast("Copied to clipboard!", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+    navigator.clipboard.writeText(text);
+  };
 
   return (
     <>
-      <div className="absolute inset-0 -z-10 h-full w-full bg-green-100 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      {/* <div className="absolute inset-0 -z-10 h-full w-full bg-green-100 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div> */}
+
       <div className="  mycontainer">
         <h1 className="text-4xl text   text-center">
           <span className="text-green-500">&lt;</span>
@@ -97,7 +162,7 @@ const Manager = () => {
             className=" flex items-center justify-center text-xl bg-green-400 hover:bg-green-500 rounded-xl px-4 py-2 w-fit "
           >
             <img src="src/assets/add-card.gif" alt="" className="w-8 h-8 " />
-            Add Password
+            &nbsp;Save
           </button>
         </div>
         <div className="passwords">
@@ -114,6 +179,7 @@ const Manager = () => {
                   <th className="py-2">Site</th>
                   <th className="py-2">Username</th>
                   <th className="py-2">Password</th>
+                  <th className="py-2">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-green-200">
@@ -129,7 +195,12 @@ const Manager = () => {
                           >
                             {item.site}
                           </a>
-                          <div className="size-7 cursor-pointer" onClick={()=>{copyText(item.site)}}>
+                          <div
+                            className="size-7 cursor-pointer"
+                            onClick={() => {
+                              copyText(item.site);
+                            }}
+                          >
                             <img width={24} src="src/assets/copy.gif" alt="" />
                           </div>
                         </div>
@@ -138,7 +209,12 @@ const Manager = () => {
                         <div className="flex justify-center items-center">
                           {item.username}
 
-                          <div className="size-7 cursor-pointer" onClick={()=>{copyText(item.username)}}>
+                          <div
+                            className="size-7 cursor-pointer"
+                            onClick={() => {
+                              copyText(item.username);
+                            }}
+                          >
                             <img width={24} src="src/assets/copy.gif" alt="" />
                           </div>
                         </div>
@@ -146,9 +222,32 @@ const Manager = () => {
                       <td className="py-2 border border-white text-center w-32">
                         <div className="flex justify-center items-center">
                           {item.password}
-                          <div className="size-7 cursor-pointer" onClick={()=>{copyText(item.password)}}>
+                          <div
+                            className="size-7 cursor-pointer"
+                            onClick={() => {
+                              copyText(item.password);
+                            }}
+                          >
                             <img width={24} src="src/assets/copy.gif" alt="" />
                           </div>
+                        </div>
+                      </td>
+                      <td className="py-2  border border-white text-center w-32">
+                        <div
+                          className="inline-block mr-2 "
+                          onClick={() => {
+                            editPassword(item.id);
+                          }}
+                        >
+                          <img width={24} src="src/assets/edit4.gif" alt="" />
+                        </div>
+                        <div
+                          className="inline-block"
+                          onClick={() => {
+                            deletePassword(item.id);
+                          }}
+                        >
+                          <img width={24} src="src/assets/delete.gif" alt="" />
                         </div>
                       </td>
                     </tr>

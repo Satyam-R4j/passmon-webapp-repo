@@ -22,7 +22,7 @@ const Navbar = () => {
             </a>
           </li>
         </ul> */}
-        <button className="gitLogo p-1 text-white bg-green-700 my-5 rounded-xl flex justify-between items-center">
+        <button className="gitLogo p-1 text-white bg-green-700 my-5 rounded-xl flex justify-between items-center ring-white ring-1">
           <img className="invert w-9 " src="src/assets/github.svg" alt="  " />
           <span className="font-bold px-2">GitHub</span>
         </button>
